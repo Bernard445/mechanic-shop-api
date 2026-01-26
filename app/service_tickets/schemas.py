@@ -1,8 +1,11 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from app.models import ServiceTicket
 from app.extensions import db
+from marshmallow import fields
+from app.mechanics.schemas import mechanic_schema
 
 class ServiceTicketSchema(SQLAlchemyAutoSchema):
+    mechanics = fields.Nested(mechanic_schema, many=True)
     class Meta:
         model = ServiceTicket
         load_instance = True

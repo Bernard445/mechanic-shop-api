@@ -1,14 +1,18 @@
 from flask import request
 from app import mechanics
-from app.extensions import db
+from app.extensions import db, cache
 from app.models import Mechanic
 from app.mechanics import mechanics_bp
 from app.mechanics.schemas import mechanic_schema, mechanics_schema
 from flask import jsonify, request
 from sqlalchemy import select
+from app.utils.util import token_required
+
+
 
 
 @mechanics_bp.route("/", methods=["POST"])
+@token_required
 def create_mechanic():
     data = request.json
 
@@ -28,11 +32,13 @@ def create_mechanic():
 
 
 @mechanics_bp.route("/", methods=["GET"])
+@cache.cached(timeout=60)
 def get_mechanics():
     mechanics = db.session.query(Mechanic).all()
     return jsonify(mechanics_schema.dump(mechanics))
 
 @mechanics_bp.route("/<int:id>", methods=["PUT"])
+@token_required
 def update_mechanic(id):
     mechanic = db.session.get(Mechanic, id)
     if not mechanic:
@@ -45,6 +51,7 @@ def update_mechanic(id):
     return jsonify(mechanic_schema.dump(mechanic))
 
 @mechanics_bp.route("/<int:id>", methods=["DELETE"])
+@token_required
 def delete_mechanic(id):
     mechanic = db.session.get(Mechanic, id)
     if not mechanic:
@@ -53,3 +60,22 @@ def delete_mechanic(id):
     db.session.delete(mechanic)
     db.session.commit()
     return {"message": "Mechanic deleted"}
+
+@mechanics_bp.route("/most-worked", methods=["GET"])
+def mechanics_most_worked():
+    mechanics = Mechanic.query.all()
+
+    sorted_mechanics = sorted(
+        mechanics,
+        key=lambda m: len(m.services),
+        reverse=True
+    )
+
+    return jsonify([
+        {
+            "id": mechanic.id,
+            "name": mechanic.name,
+            "ticket_count": len(mechanic.services)
+        }
+        for mechanic in sorted_mechanics
+    ])

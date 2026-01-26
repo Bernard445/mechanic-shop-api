@@ -3,20 +3,20 @@ from sqlalchemy import ForeignKey, Table
 from datetime import date
 from app.extensions import db
 
-
-
-
-class Base(DeclarativeBase):
-    pass
-
-service_mechanic = Table(
-    'service_mechanic',
-    Base.metadata,
-    db.Column('service_id', ForeignKey('service_tickets.id'), primary_key=True),
-    db.Column('mechanic_id', ForeignKey('mechanics.id'), primary_key=True)
+service_inventory = db.Table(
+    'service_inventory',
+    db.Column('service_id', db.Integer, db.ForeignKey('service_tickets.id'), primary_key=True),
+    db.Column('inventory_id', db.Integer, db.ForeignKey('inventory.id'), primary_key=True)
 )
 
-class Customer(Base):
+service_mechanic = db.Table(
+    'service_mechanic',
+    db.Column('service_id', db.Integer, db.ForeignKey('service_tickets.id'), primary_key=True),
+    db.Column('mechanic_id', db.Integer, db.ForeignKey('mechanics.id'), primary_key=True)
+)
+
+
+class Customer(db.Model):
     __tablename__ = 'customers'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -25,10 +25,11 @@ class Customer(Base):
     email = db.Column(db.String(150), unique=True)
     phone = db.Column(db.String(20))
     address = db.Column(db.String(200))
+    password = db.Column(db.String(255), nullable=False)
 
     vehicles = relationship('Vehicle', back_populates='owner')
 
-class Vehicle(Base):
+class Vehicle(db.Model):
     __tablename__ = 'vehicles'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -43,7 +44,7 @@ class Vehicle(Base):
     services = relationship('ServiceTicket', back_populates='vehicle')
 
 
-class ServiceTicket(Base):
+class ServiceTicket(db.Model):
     __tablename__ = 'service_tickets'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -54,13 +55,19 @@ class ServiceTicket(Base):
     vehicle_id = db.Column(db.Integer, ForeignKey('vehicles.id'))
     vehicle = relationship('Vehicle', back_populates='services')
 
+    inventory = relationship(
+        'Inventory',
+        secondary=service_inventory,
+        back_populates='services'
+    )
+
     mechanics = relationship(
         'Mechanic',
         secondary=service_mechanic,
         back_populates='services'
     )
 
-class Mechanic(Base):
+class Mechanic(db.Model):
     __tablename__ = 'mechanics'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -74,4 +81,17 @@ class Mechanic(Base):
         'ServiceTicket',
         secondary=service_mechanic,
         back_populates='mechanics'
+    )
+
+class Inventory(db.Model):
+    __tablename__ = 'inventory'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+    services = relationship(
+        'ServiceTicket',
+        secondary=service_inventory,
+        back_populates='inventory'
     )
