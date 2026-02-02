@@ -1,30 +1,25 @@
-from flask import request
-from app import mechanics
+from flask import jsonify, request
+from sqlalchemy import select
 from app.extensions import db, cache
 from app.models import Mechanic
 from app.mechanics import mechanics_bp
 from app.mechanics.schemas import mechanic_schema, mechanics_schema
-from flask import jsonify, request
-from sqlalchemy import select
 from app.utils.util import token_required
-
-
 
 
 @mechanics_bp.route("/", methods=["POST"])
 @token_required
-def create_mechanic():
+def create_mechanic(customer_id):
     data = request.json
 
-    # Check for duplicate email
-    existing = db.session.execute(
-        select(Mechanic).where(Mechanic.email == data.get("email"))
-    ).scalar_one_or_none()
+    if data.get("email"):
+        existing = db.session.execute(
+            select(Mechanic).where(Mechanic.email == data.get("email"))
+        ).scalar_one_or_none()
+        if existing:
+            return jsonify({"error": "Email already exists"}), 400
 
-    if existing:
-        return jsonify({"error": "Email already exists"}), 400
-
-    mechanic = mechanic_schema.load(data)
+    mechanic = mechanic_schema.load(data, session=db.session)
     db.session.add(mechanic)
     db.session.commit()
 
@@ -34,12 +29,13 @@ def create_mechanic():
 @mechanics_bp.route("/", methods=["GET"])
 @cache.cached(timeout=60)
 def get_mechanics():
-    mechanics = db.session.query(Mechanic).all()
-    return jsonify(mechanics_schema.dump(mechanics))
+    mechanics = Mechanic.query.all()
+    return jsonify(mechanics_schema.dump(mechanics)), 200
+
 
 @mechanics_bp.route("/<int:id>", methods=["PUT"])
 @token_required
-def update_mechanic(id):
+def update_mechanic(customer_id, id):
     mechanic = db.session.get(Mechanic, id)
     if not mechanic:
         return {"message": "Mechanic not found"}, 404
@@ -48,34 +44,27 @@ def update_mechanic(id):
         setattr(mechanic, key, value)
 
     db.session.commit()
-    return jsonify(mechanic_schema.dump(mechanic))
+    return jsonify(mechanic_schema.dump(mechanic)), 200
+
 
 @mechanics_bp.route("/<int:id>", methods=["DELETE"])
 @token_required
-def delete_mechanic(id):
+def delete_mechanic(customer_id, id):
     mechanic = db.session.get(Mechanic, id)
     if not mechanic:
         return {"message": "Mechanic not found"}, 404
 
     db.session.delete(mechanic)
     db.session.commit()
-    return {"message": "Mechanic deleted"}
+    return "", 204
+
 
 @mechanics_bp.route("/most-worked", methods=["GET"])
 def mechanics_most_worked():
     mechanics = Mechanic.query.all()
-
-    sorted_mechanics = sorted(
-        mechanics,
-        key=lambda m: len(m.services),
-        reverse=True
-    )
+    sorted_mechanics = sorted(mechanics, key=lambda m: len(m.services), reverse=True)
 
     return jsonify([
-        {
-            "id": mechanic.id,
-            "name": mechanic.name,
-            "ticket_count": len(mechanic.services)
-        }
-        for mechanic in sorted_mechanics
-    ])
+        {"id": m.id, "name": m.name, "ticket_count": len(m.services)}
+        for m in sorted_mechanics
+    ]), 200

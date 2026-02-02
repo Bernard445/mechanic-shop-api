@@ -33,7 +33,7 @@ class Vehicle(db.Model):
     __tablename__ = 'vehicles'
 
     id = db.Column(db.Integer, primary_key=True)
-    vin = db.Column(db.String(17), unique=True, nullable=False)
+    vin = db.Column(db.String(17), unique=True, nullable=True)
     make = db.Column(db.String(50))
     model = db.Column(db.String(50))
     year = db.Column(db.Integer)
