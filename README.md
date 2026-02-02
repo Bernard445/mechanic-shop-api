@@ -1,58 +1,117 @@
-# Building API with Application Factory Pattern
+🛠 Mechanic Shop API
 
-This project is a Flask REST API for a mechanic shop built using the
-Application Factory Pattern. It uses SQLAlchemy for database models,
-Marshmallow for serialization and validation, and Blueprints for
-organizing routes.
+A RESTful Flask API for managing a mechanic shop.
+This project supports customers, vehicles, service tickets, mechanics, and inventory with authentication, rate limiting, caching, and relational data modeling.
 
-## Features
+🚀 Features
 
-- Application Factory Pattern
-- Blueprint-based routing
-- SQLAlchemy ORM
-- Marshmallow schemas
-- MySQL database integration
-- CRUD operations for Mechanics
-- CRUD operations for Customers
-- Vehicles linked to Customers
-- Service Tickets linked to Vehicles
-- Assign and remove Mechanics from Service Tickets
-- Postman collection included for testing
+JWT Token Authentication (python-jose)
 
-## Setup Instructions
+Rate Limiting (Flask-Limiter)
 
-1. Clone the repository:
-```bash
-git clone https://github.com/Bernard445/Building-API-with-Application-Factory-Pattern.git
-cd Building-API-with-Application-Factory-Pattern
-Create and activate a virtual environment:
+Caching (Flask-Caching)
 
-bash
-Copy code
-python -m venv venv
-venv\Scripts\activate
-Install dependencies:
+Pagination
 
-bash
-Copy code
-pip install flask flask-sqlalchemy flask-marshmallow marshmallow-sqlalchemy mysql-connector-python
-Database setup:
+Many-to-Many Relationships
 
-Create a MySQL database named mechanic_shop
+Secure protected routes
 
-Update database credentials in app/__init__.py if needed
+Inventory tracking system
 
-Run the application:
+Postman-tested endpoints
 
-bash
-Copy code
-python app.py
-The API will be available at:
+🧩 Technologies Used
 
-cpp
-Copy code
-http://127.0.0.1:5000
-API Testing
-A Postman collection JSON file is included in the repository
+Python
 
-Import the collection into Postman to test all endpoints
+Flask
+
+Flask-SQLAlchemy
+
+Flask-Marshmallow
+
+Flask-Limiter
+
+Flask-Caching
+
+MySQL
+
+python-jose
+
+Postman
+
+🔐 Authentication
+
+Users authenticate via:
+
+POST /customers/login
+
+
+Returns a JWT token.
+Protected routes require a header:
+
+Authorization: Bearer <token>
+
+📦 API Resources
+Customers
+
+POST /customers – Create customer
+
+POST /customers/login – Login and receive token
+
+GET /customers – Get paginated customers
+
+PUT /customers/<id> – Update customer (protected)
+
+DELETE /customers/<id> – Delete customer (protected)
+
+GET /customers/my-tickets – Get logged-in customer’s service tickets
+
+Mechanics
+
+POST /mechanics – Create mechanic (protected)
+
+GET /mechanics – Get all mechanics (cached)
+
+PUT /mechanics/<id> – Update mechanic (protected)
+
+DELETE /mechanics/<id> – Delete mechanic (protected)
+
+GET /mechanics/most-worked – Sorted by number of tickets worked
+
+Vehicles
+
+POST /vehicles – Create vehicle
+
+GET /vehicles – Get all vehicles
+
+Service Tickets
+
+POST /service-tickets – Create ticket (protected)
+
+GET /service-tickets – Get all tickets (protected)
+
+PUT /service-tickets/<ticket_id>/edit – Add/remove mechanics
+
+POST /service-tickets/<ticket_id>/add-part – Add inventory part to ticket
+
+Inventory
+
+POST /inventory – Create part (protected)
+
+GET /inventory – Get all parts (protected)
+
+PUT /inventory/<id> – Update part (protected)
+
+DELETE /inventory/<id> – Delete part (protected)
+
+🧠 Data Relationships
+
+One Customer → Many Vehicles
+
+One Vehicle → Many Service Tickets
+
+Service Tickets ↔ Mechanics (Many-to-Many)
+
+Service Tickets ↔ Inventory Parts (Many-to-Many)
