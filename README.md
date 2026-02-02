@@ -1,117 +1,88 @@
-🛠 Mechanic Shop API
+# Mechanic Shop API
 
-A RESTful Flask API for managing a mechanic shop.
-This project supports customers, vehicles, service tickets, mechanics, and inventory with authentication, rate limiting, caching, and relational data modeling.
+A RESTful API for managing a mechanic shop, built using Flask and the Application Factory pattern.  
+This API supports customers, mechanics, vehicles, service tickets, and inventory with token-based authentication, pagination, and testing.
 
-🚀 Features
+---
 
-JWT Token Authentication (python-jose)
+## 🚀 Features
+- Customers, Mechanics, Vehicles, Service Tickets, Inventory
+- JWT token authentication
+- Pagination for customers
+- Many-to-many relationships (mechanics ↔ service tickets)
+- Rate limiting on login
+- Caching on mechanics GET route
+- Full unit test coverage using `unittest`
+- Swagger API documentation
 
-Rate Limiting (Flask-Limiter)
+---
 
-Caching (Flask-Caching)
+## 🛠️ Tech Stack
+- Python
+- Flask
+- Flask-SQLAlchemy
+- Marshmallow
+- Flask-Limiter
+- Flask-Caching
+- Swagger (Flask-Swagger-UI)
+- unittest
 
-Pagination
+---
 
-Many-to-Many Relationships
+## 📦 Installation
 
-Secure protected routes
+Create virtual environment and install dependencies:
 
-Inventory tracking system
+```bash
+python -m venv venv
+venv\Scripts\activate   # Windows
+pip install -r requirements.txt
+▶️ Run the App
+python app.py
+API will run at:
 
-Postman-tested endpoints
+http://127.0.0.1:5000
+Swagger Docs:
 
-🧩 Technologies Used
-
-Python
-
-Flask
-
-Flask-SQLAlchemy
-
-Flask-Marshmallow
-
-Flask-Limiter
-
-Flask-Caching
-
-MySQL
-
-python-jose
-
-Postman
-
+http://127.0.0.1:5000/apidocs
+🧪 Run Tests
+python -m unittest discover -s tests
 🔐 Authentication
-
-Users authenticate via:
+Login endpoint:
 
 POST /customers/login
+Returns:
 
+{
+  "status": "success",
+  "auth_token": "TOKEN"
+}
+Use token in headers:
 
-Returns a JWT token.
-Protected routes require a header:
+Authorization: Bearer TOKEN
+📂 Project Structure
+app/
+  customers/
+  mechanics/
+  vehicles/
+  service_tickets/
+  inventory/
+  utils/
+tests/
+swagger.yaml
+app.py
+📑 API Documentation
+All routes are documented using Swagger:
 
-Authorization: Bearer <token>
+/apidocs
+Includes:
 
-📦 API Resources
-Customers
+Endpoints
 
-POST /customers – Create customer
+Request types
 
-POST /customers/login – Login and receive token
+Parameters
 
-GET /customers – Get paginated customers
+Responses
 
-PUT /customers/<id> – Update customer (protected)
-
-DELETE /customers/<id> – Delete customer (protected)
-
-GET /customers/my-tickets – Get logged-in customer’s service tickets
-
-Mechanics
-
-POST /mechanics – Create mechanic (protected)
-
-GET /mechanics – Get all mechanics (cached)
-
-PUT /mechanics/<id> – Update mechanic (protected)
-
-DELETE /mechanics/<id> – Delete mechanic (protected)
-
-GET /mechanics/most-worked – Sorted by number of tickets worked
-
-Vehicles
-
-POST /vehicles – Create vehicle
-
-GET /vehicles – Get all vehicles
-
-Service Tickets
-
-POST /service-tickets – Create ticket (protected)
-
-GET /service-tickets – Get all tickets (protected)
-
-PUT /service-tickets/<ticket_id>/edit – Add/remove mechanics
-
-POST /service-tickets/<ticket_id>/add-part – Add inventory part to ticket
-
-Inventory
-
-POST /inventory – Create part (protected)
-
-GET /inventory – Get all parts (protected)
-
-PUT /inventory/<id> – Update part (protected)
-
-DELETE /inventory/<id> – Delete part (protected)
-
-🧠 Data Relationships
-
-One Customer → Many Vehicles
-
-One Vehicle → Many Service Tickets
-
-Service Tickets ↔ Mechanics (Many-to-Many)
-
-Service Tickets ↔ Inventory Parts (Many-to-Many)
+Definitions
