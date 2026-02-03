@@ -6,11 +6,7 @@ import unittest
 class TestCustomer(unittest.TestCase):
 
     def setUp(self):
-        self.app = create_app({
-            "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
-        })
-
+        self.app = create_app("TestingConfig")
         self.client = self.app.test_client()
 
         with self.app.app_context():

@@ -6,10 +6,7 @@ import unittest
 class TestMechanic(unittest.TestCase):
 
     def setUp(self):
-        self.app = create_app({
-            "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
-        })
+        self.app = create_app("TestingConfig")
 
         self.client = self.app.test_client()
 
