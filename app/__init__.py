@@ -9,11 +9,11 @@ from app.inventory import inventory_bp
 from flasgger import Swagger
 
 
-def create_app(test_config=None):
+def create_app(config_name=None):
     app = Flask(__name__)
 
-    if test_config:
-        app.config.update(test_config)
+    if config_name:
+        app.config.from_object(f"config.{config_name}")
     else:
         app.config["SQLALCHEMY_DATABASE_URI"] = (
             "mysql+mysqlconnector://root:root@127.0.0.1:3307/mechanic_shop"
@@ -33,9 +33,5 @@ def create_app(test_config=None):
     app.register_blueprint(service_tickets_bp, url_prefix="/service-tickets")
     app.register_blueprint(vehicles_bp, url_prefix="/vehicles")
     app.register_blueprint(inventory_bp, url_prefix="/inventory")
-
-    #print("\nREGISTERED ROUTES:")
-    for rule in app.url_map.iter_rules():
-        print(rule)
 
     return app
