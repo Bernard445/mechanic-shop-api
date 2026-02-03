@@ -1,5 +1,5 @@
 name: Mechanic Shop API CI
-# trigger actions on push or pull request to main branch
+# trigger actions
 on:
   push:
     branches: ["main"]
