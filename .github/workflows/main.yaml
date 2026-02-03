@@ -30,6 +30,23 @@ jobs:
 
     steps:
       - name: Trigger Render Deploy
+        env:
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
+          set -euo pipefail
+
+          SERVICE_ID="$(printf '%s' "$RENDER_SERVICE_ID" | tr -d '\r\n' | xargs)"
+
+          if [ -z "$SERVICE_ID" ]; then
+            echo "ERROR: RENDER_SERVICE_ID is empty after sanitization"
+            exit 1
+          fi
+
+          DEPLOY_URL="https://api.render.com/v1/services/${SERVICE_ID}/deploys"
+          echo "SERVICE_ID length: ${#SERVICE_ID}"
+
+          curl --fail -sS -X POST "$DEPLOY_URL" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}'
