@@ -4,7 +4,10 @@ info:
   description: "This is an API"
   version: "1.0.0"
 
-host: "mechanic-shop-api-1-52yv.onrender.com"
+host: "mechanic-shop-api-pb19.onrender.com"
+
+schemes:
+  - "https"
 
 schemes:
   - "https"
