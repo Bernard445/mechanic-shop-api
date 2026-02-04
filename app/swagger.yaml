@@ -9,9 +9,6 @@ host: "mechanic-shop-api-pb19.onrender.com"
 schemes:
   - "https"
 
-schemes:
-  - "https"
-
 consumes:
   - "application/json"
 
@@ -697,7 +694,7 @@ definitions:
       $ref: "#/definitions/ServiceTicketResponse"
 
 # inventory
-    CreateInventoryPayload:
+  CreateInventoryPayload:
     type: object
     properties:
       name:

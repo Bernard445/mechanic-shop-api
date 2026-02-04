@@ -14,8 +14,9 @@ def create_app(config_name=None):
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "SQLALCHEMY_DATABASE_URI",
-    "mysql+mysqlconnector://root:root@127.0.0.1:3307/mechanic_shop"
+    "sqlite:///mechanic_shop.db"
 )
+
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
