@@ -21,6 +21,10 @@ def create_app(config_name=None):
     limiter.init_app(app)
     cache.init_app(app)
 
+    with app.app_context():
+        db.create_all()
+
+
     Swagger(app, template_file=os.path.join(os.path.dirname(__file__), "swagger.yaml"))
 
     app.register_blueprint(customers_bp, url_prefix="/customers")
