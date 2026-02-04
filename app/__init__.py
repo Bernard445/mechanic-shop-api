@@ -12,14 +12,9 @@ from flasgger import Swagger
 def create_app(config_name=None):
     app = Flask(__name__)
 
-    if config_name:
-        app.config.from_object(f"config.{config_name}")
-    else:
-        app.config["SQLALCHEMY_DATABASE_URI"] = (
-            "mysql+mysqlconnector://root:root@127.0.0.1:3307/mechanic_shop"
-        )
-
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 
     db.init_app(app)
     ma.init_app(app)
